@@ -1,4 +1,8 @@
+*~
+*bkp*
+__pycache__
+*.pyc
+
 papers/*
 
 .ipynb_checkpoints/*
-*bkp*
