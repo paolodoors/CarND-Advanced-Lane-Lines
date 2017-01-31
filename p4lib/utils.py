@@ -12,11 +12,8 @@ def draw_lanes(original, warped, lanes, perspective=None):
     if len(zeros.shape) < 3:
         zeros = np.dstack((zeros, zeros, zeros))
     # Recast the x and y points into usable format for cv2.fillPoly()
-#    pts_left = np.array([np.transpose(np.vstack(lanes[0]))])
-#    pts_right = np.array([np.flipud(np.transpose(np.vstack(lanes[1])))])
-#    pts = np.hstack((pts_left, pts_right))
-    pts_left = np.array([np.transpose(np.vstack([lanes[0][0], lanes[0][1]]))])
-    pts_right = np.array([np.flipud(np.transpose(np.vstack([lanes[1][0], lanes[1][1]])))])
+    pts_left = np.array([np.transpose(np.vstack(lanes['left']))])
+    pts_right = np.array([np.flipud(np.transpose(np.vstack(lanes['right'])))])
     pts = np.hstack((pts_left, pts_right))
     # Draw the lane onto the warped blank image
     cv2.fillPoly(zeros, np.int_(pts), (0, 255, 0))
@@ -29,4 +26,4 @@ def draw_lanes(original, warped, lanes, perspective=None):
 
     # Combine the result with the original image
     result = cv2.addWeighted(original, 1, blend, 0.3, 0)
-    return result
+    return zeros, result
