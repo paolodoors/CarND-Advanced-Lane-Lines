@@ -1,6 +1,9 @@
 import cv2
 
 class Perspective():
+    '''
+    Map four src points from orig_img_size to dst points in warped_image_size
+    '''
 
     def __init__(self, src, dst, original_image_size, warped_image_size):
         # Compute transformation matrix (and its inverse)

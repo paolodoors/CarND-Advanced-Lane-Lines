@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-class DiagWindow():
+class DisplayWindow():
     '''
            0                            1280    1600    1920
     0      +-------------------------------+-------+-------+ 0
@@ -33,8 +33,9 @@ class DiagWindow():
                 'b3':       [(840, 640),    (320, 240)],
                 'b4':       [(840, 960),    (320, 240)]}
 
-    def __init__(self):
+    def __init__(self, debug=False):
         self.screen = np.zeros((1080, 1920, 3), dtype=np.uint8)
+        self.debug = debug
 
     def __set_image(self, image, size):
         if len(image.shape) < 3:
@@ -50,7 +51,8 @@ class DiagWindow():
         (width, height) = self.sections[region][1]
 
         if region is not 'text':
-            self.screen[y:y+height, x:x+width] = self.__set_image(params, (width, height))
+            if region in ['main', 'text'] or self.debug:
+                self.screen[y:y+height, x:x+width] = self.__set_image(params, (width, height))
         else:
             font = cv2.FONT_HERSHEY_COMPLEX
             panel = np.zeros((height, width, 3), dtype=np.uint8)
@@ -58,7 +60,21 @@ class DiagWindow():
             for text in params:
                 cv2.putText(panel, text, (30, line), font, 1, (255, 0, 0), 2)
                 line += 30
-            self.screen[y:y+height, x:x+width] = panel
+            if self.debug:
+                self.screen[y:y+height, x:x+width] = panel
+            else:
+                offset = 50
+                patch = self.screen[offset:offset+height, offset:offset+width]
+                blended = cv2.addWeighted(patch, 1, panel, 0.8, 0)
+                self.screen[offset:offset+height, offset:offset+width] = blended
+                
 
     def get_output(self):
-        return self.screen
+        if self.debug:
+            display = self.screen
+        else:
+            (y, x) = self.sections['main'][0]
+            (width, height) = self.sections['main'][1]
+            display = self.screen[y:y+height, x:x+width]
+
+        return display
